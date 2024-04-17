@@ -25,6 +25,11 @@ pipeline {
                 bat 'docker run -d --name my-app-instance my-app'
             }
         }
+        steps('Tag docker image') {
+            steps {
+                bat 'docker tag my-app ahmed9350/my-app'
+            }
+        }   
 
         stage('Push Docker Image') {
             steps {
