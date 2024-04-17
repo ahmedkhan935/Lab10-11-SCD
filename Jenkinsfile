@@ -16,26 +16,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("my-app")
-                }
+                bat 'docker build -t my-app .'
             }
         }
 
         stage('Run Docker Image') {
             steps {
-                script {
-                    docker.image("my-app").run()
-                }
+                bat 'docker run -d --name my-app-instance my-app'
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                        docker.image("my-app").push()
-                    }
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    bat 'docker push my-app'
                 }
             }
         }
